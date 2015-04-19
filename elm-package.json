@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "summary": "Socket.io (websockets) library",
-    "repository": "https://github.com/mgold/elm-socketio",
+    "repository": "https://github.com/mgold/elm-socketio.git",
     "license": "BSD3",
     "source-directories": [
         "."
