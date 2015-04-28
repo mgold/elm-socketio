@@ -1,6 +1,6 @@
 #Socket.io for Elm
 
-This is a work in progress. Feedback on the API is welcome.
+This is a work in progress. The API is subject to change dramatically.
 
 For documentation, see `SocketIO.elm`.
 

@@ -1,7 +1,7 @@
 module SocketIO where
 
-{-| A module for working with [Socket.io](http://socket.io/) servers. **All
-    functions are impure.** This module uses Socket.io 1.3.5.
+{-| A module for working with [Socket.io](http://socket.io/) servers. This
+    module uses Socket.io 1.3.5.
 
 # Creating a Socket
 Avoid creating signals of sockets.
@@ -9,9 +9,6 @@ Avoid creating signals of sockets.
 
 # Sending and Receiving
 @docs emit, on
-
-# Checking the connection
-@docs isConnected, isDisconnected
 -}
 
 import Time
@@ -53,16 +50,9 @@ io = Native.SocketIO.io
 emit : Socket -> String -> a -> Task.Task x ()
 emit = Native.SocketIO.emit
 
-{-| Create a signal for an event. The values are JSON encoded. The inital value,
-    and default for unserializable JS objects, is `"null"`. -}
-on : Socket -> String -> Signal String
+{-| Create a task that uses the socket to send events of the given name to a
+    mailbox as a JSON-encoded value. Unserializable JS objects become `"null"`;
+    this is a good initial value when you set up the mailbox.
+-}
+on : Socket -> String -> Signal.Address String -> Task.Task x ()
 on = Native.SocketIO.on
-
-{-| Check if a socket is connected. -}
-isConnected : Socket -> Bool
-isConnected = Native.SocketIO.isConnected
-
-{-| Check if a socket is disconnected. Socket.io tracks this separately from
-    the connection boolean. -}
-isDisconnected : Socket -> Bool
-isDisconnected = Native.SocketIO.isDisconnected

@@ -1,11 +1,9 @@
 Elm.Native.SocketIO = {};
-/* jshint -W093 */
 Elm.Native.SocketIO.make = function(localRuntime) {
 
     localRuntime.Native = localRuntime.Native || {};
     localRuntime.Native.SocketIO = localRuntime.Native.SocketIO || {};
-    if (localRuntime.Native.SocketIO.values)
-    {
+    if (localRuntime.Native.SocketIO.values){
         return localRuntime.Native.SocketIO.values;
     }
 
@@ -15,31 +13,31 @@ Elm.Native.SocketIO.make = function(localRuntime) {
 
     function emit(socket, eventName, message){
         return Task.asyncFunction(function(callback){
+            if (socket.disconnected) return callback(Task.fail("Socket disconnected"));
+            socket.emit(eventName, message);
+            callback(Task.succeed(Utils.Tuple0));
+        });
+    }
+
+    function on(socket, eventName, address){
+        return Task.asyncFunction(function(callback){
             setTimeout(function(){
                 if (socket.disconnected) return callback(Task.fail("Socket disconnected"));
-                socket.emit(eventName, message);
-                return callback(Task.succeed(Utils.Tuple0));
-            }, socket.connected ? 0 : 200); // wait for connection
+                socket.on(eventName, function(data){
+                    Task.perform(address._0(JSON.stringify(data) || "null"));
+                });
+                callback(Task.succeed(Utils.Tuple0));
+            }, socket.connected ? 0 : 250);
         });
     }
 
-    function on(socket, eventName){
-        input = Signal.input('SocketIO.on-'+eventName, "null");
-        socket.on(eventName, function(data){
-            localRuntime.notify(input.id, JSON.stringify(data) || "null");
-        });
-        return input;
-    }
-
-    return localRuntime.Native.SocketIO.values = {
+    localRuntime.Native.SocketIO.values = {
         io: F2(io),
         emit: F3(emit),
-        on: F2(on),
-        isConnected: function(socket){return socket.connected;},
-        isDisconnected: function(socket){return socket.disconnected;}
+        on: F3(on),
     };
+    return localRuntime.Native.SocketIO.values;
 };
-/* jshint +W093 */
 
 // Socket.io client from https://cdn.socket.io/socket.io-1.3.5.js
 // License: MIT
