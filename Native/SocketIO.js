@@ -11,7 +11,17 @@ Elm.Native.SocketIO.make = function(localRuntime) {
     var Task = Elm.Native.Task.make (localRuntime);
     var Utils = Elm.Native.Utils.make (localRuntime);
 
-    function emit(socket, eventName, message){
+    function ioWrapper(hostname, options){
+        var socket = io(hostname, options);
+        return Task.asyncFunction(function(callback){
+            setTimeout(function(){
+                if (socket.disconnected) return callback(Task.fail("Socket disconnected"));
+                callback(Task.succeed(socket));
+            }, 250); // give socket time to connect
+        });
+    }
+
+    function emit(eventName, message, socket){
         return Task.asyncFunction(function(callback){
             if (socket.disconnected) return callback(Task.fail("Socket disconnected"));
             socket.emit(eventName, message);
@@ -19,20 +29,18 @@ Elm.Native.SocketIO.make = function(localRuntime) {
         });
     }
 
-    function on(socket, eventName, address){
+    function on(eventName, address, socket){
         return Task.asyncFunction(function(callback){
-            setTimeout(function(){
-                if (socket.disconnected) return callback(Task.fail("Socket disconnected"));
-                socket.on(eventName, function(data){
-                    Task.perform(address._0(JSON.stringify(data) || "null"));
-                });
-                callback(Task.succeed(Utils.Tuple0));
-            }, socket.connected ? 0 : 250);
+            if (socket.disconnected) return callback(Task.fail("Socket disconnected"));
+            socket.on(eventName, function(data){
+                Task.perform(address._0(JSON.stringify(data) || "null"));
+            });
+            callback(Task.succeed(Utils.Tuple0));
         });
     }
 
     localRuntime.Native.SocketIO.values = {
-        io: F2(io),
+        io: F2(ioWrapper),
         emit: F3(emit),
         on: F3(on),
     };

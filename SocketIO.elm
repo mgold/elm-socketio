@@ -40,19 +40,19 @@ defaultOptions =
 It's possible to run the Elm Reactor and your Socket.io node server
 simultanesouly on different ports.
 -}
-io : String -> Options -> Socket
+io : String -> Options -> Task.Task x Socket
 io = Native.SocketIO.io
 
 {-| Send anything on the socket using the given event name. No serialization is
     done and the server must accept the JS representation of the Elm object
     sent.
 -}
-emit : Socket -> String -> a -> Task.Task x ()
+emit : String -> a -> Socket -> Task.Task x ()
 emit = Native.SocketIO.emit
 
 {-| Create a task that uses the socket to send events of the given name to a
     mailbox as a JSON-encoded value. Unserializable JS objects become `"null"`;
     this is a good initial value when you set up the mailbox.
 -}
-on : Socket -> String -> Signal.Address String -> Task.Task x ()
+on : String -> Signal.Address String -> Socket -> Task.Task x ()
 on = Native.SocketIO.on
