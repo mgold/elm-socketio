@@ -14,10 +14,28 @@ Elm.Native.SocketIO.make = function(localRuntime) {
     function ioWrapper(hostname, options){
         var socket = io(hostname, options);
         return Task.asyncFunction(function(callback){
-            setTimeout(function(){
-                if (socket.disconnected) return callback(Task.fail("Socket disconnected"));
+            if (socket.connected){
                 callback(Task.succeed(socket));
-            }, 250); // give socket time to connect
+            }else{
+                attemptConnection(socket, callback);
+            }
+        });
+    }
+
+    function attemptConnection(socket, callback){
+        var sent = false;
+        socket.on("connect", function(){
+            if (!sent){
+                sent = true;
+                callback(Task.succeed(socket));
+            }
+        });
+        // this doesn't work yet - can't find the right error event
+        socket.on("disconnect", function(d){
+            if (!sent){
+                sent = true;
+                callback(Task.fail("Socket disconnected"));
+            }
         });
     }
 
