@@ -2,12 +2,14 @@
 
 This is a work in progress. The API is subject to change dramatically.
 
-For documentation, see `SocketIO.elm`.
+Currently, if you want a stable connection to the server (the most common use case), the library can accommodate you. Dynamic connections have not been tested. Joining [rooms](http://socket.io/docs/rooms-and-namespaces/) is not (yet?) supported.
+
+For documentation, see `src/SocketIO.elm`. For more information, see the [mailing list thread](https://groups.google.com/d/msg/elm-discuss/qq2mv2igZ_I/FRWhy6PfKYUJ).
 
 Supports Elm 0.15 and Socket.io 1.3.5.
 
 ## Example
 
-A working Elm client and Node server are provided. In separate terminals, run `node server.js` and `elm reactor`, then [open your browser](http://localhost:8000/Example.elm) as you normally would with the reactor.
+A working Elm client and Node server are provided. In separate terminals, run `node example/server.js` and `elm reactor`, then [open your browser](http://localhost:8000/example/Example.elm) as you normally would with the reactor.
 
 In the example, client and server exchange a number, incrementing it each time. The server sees odd numbers and the client sees even numbers.
