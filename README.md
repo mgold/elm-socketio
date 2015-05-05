@@ -8,8 +8,10 @@ For documentation, see `src/SocketIO.elm`. For more information, see the [mailin
 
 Supports Elm 0.15 and Socket.io 1.3.5.
 
-## Example
+## Examples
 
-A working Elm client and Node server are provided. In separate terminals, run `node example/server.js` and `elm reactor`, then [open your browser](http://localhost:8000/example/Example.elm) as you normally would with the reactor.
-
+### Numbers
 In the example, client and server exchange a number, incrementing it each time. The server sees odd numbers and the client sees even numbers.
+
+A working Elm client and Node server are provided. In separate terminals, run `node examples/numbers/server.js` and `elm reactor`, then [open your browser](http://localhost:8000/examples/numbers/Example.elm) as you normally would with the reactor.
+
