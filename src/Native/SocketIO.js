@@ -57,10 +57,20 @@ Elm.Native.SocketIO.make = function(localRuntime) {
         });
     }
 
+    function connected(address, socket){
+        return Task.asyncFunction(function(callback){
+            Task.perform(address._0(socket.connected));
+            socket.on("connect", function(){ Task.perform(address._0(true)); });
+            socket.on("disconnect", function(){ Task.perform(address._0(false)); });
+            callback(Task.succeed(Utils.Tuple0));
+        });
+    }
+
     localRuntime.Native.SocketIO.values = {
         io: F2(ioWrapper),
         emit: F3(emit),
         on: F3(on),
+        connected: F2(connected),
     };
     return localRuntime.Native.SocketIO.values;
 };

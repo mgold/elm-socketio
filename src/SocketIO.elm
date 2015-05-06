@@ -8,7 +8,9 @@ Avoid creating signals of sockets.
 @docs io, Options, defaultOptions
 
 # Sending and Receiving
-@docs emit, on
+These functions should be used with `Task.andThen` to provide a socket obtained
+with `io`.
+@docs emit, on, connected
 -}
 
 import Time
@@ -50,9 +52,18 @@ io = Native.SocketIO.io
 emit : String -> a -> Socket -> Task.Task x ()
 emit = Native.SocketIO.emit
 
-{-| Create a task that uses the socket to send events of the given name to a
-    mailbox as a JSON-encoded value. Unserializable JS objects become `"null"`;
-    this is a good initial value when you set up the mailbox.
+{-| Receive events of the given name at a mailbox as a JSON-encoded value.
+    Unserializable JS objects become `"null"`; this is a good initial value
+    when you set up the mailbox.
 -}
 on : String -> Signal.Address String -> Socket -> Task.Task x ()
 on = Native.SocketIO.on
+
+{-| Set up a signal of bools indicating whether or not the socket is connected.
+    You should initialize the mailbox to `False`; if the server is available a
+    `True` event will be sent almost immediately. If the server is not
+    available, `io` will not complete and therefore this task will not run.
+-}
+connected : Signal.Address Bool -> Socket -> Task.Task x ()
+connected = Native.SocketIO.connected
+
