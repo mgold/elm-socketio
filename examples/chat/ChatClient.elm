@@ -51,14 +51,6 @@ received = Signal.mailbox "null"
 port responses : Task x ()
 port responses = socket `andThen` SocketIO.on eventName received.address
 
--- Process incoming JSON into something useful
-messages : Signal (List Message)
-messages =
-    Signal.map (decode>>Result.toMaybe) received.signal
-    |> Signal.foldp (\mx xs -> case mx of
-        Just x -> x::xs
-        Nothing -> xs) []
-
 {---- Sent to Server ----}
 type alias FieldModel = {content : Field.Content, submit : Bool}
 model0 = FieldModel Field.noContent False
@@ -89,16 +81,28 @@ fieldModelToMessage t {content, submit} =
 clock : Signal Time
 clock = Time.every Time.second
 
+localMessage : Signal Message
+localMessage =
+    Signal.map2 fieldModelToMessage (clock |> Signal.sampleOn entries.signal) entries.signal
+
 port outgoing : Signal (Task x ())
 port outgoing =
     let send x = socket `andThen` SocketIO.emit eventName x
-    in Signal.map2 (\fm t -> (fieldModelToMessage t fm) |> encode |> send)
-        entries.signal (clock |> Signal.sampleOn entries.signal)
+    in Signal.map (encode>>send) localMessage
+
+
+messages : Signal (List Message)
+messages =
+    Signal.map (decode>>Result.toMaybe) received.signal
+    |> Signal.merge (Signal.map (\m -> if m.submit then Just m else Nothing) localMessage)
+    |> Signal.foldp (\mx xs -> case mx of
+        Just x -> x::xs
+        Nothing -> xs) []
 
 {---- View ----}
-render : Time -> List Message -> Element
-render t ms =
-    List.map (renderOne t) ms
+render : Element -> Time -> List Message -> Element
+render elem t ms =
+    elem :: List.map (renderOne t) ms
         |> E.flow E.up
 
 renderOne : Time -> Message -> Element
@@ -110,6 +114,6 @@ renderOne t {name, body, time} =
 
 main : Signal Element
 main =
-    Signal.map2 E.beside field submit
-    --Signal.map3 render field (Time.every Time.second) messages |> Signal.sampleOn messages
+    let textField = Signal.map2 E.beside field submit
+    in Signal.map3 render textField (Time.every Time.second) messages |> Signal.sampleOn messages
 
