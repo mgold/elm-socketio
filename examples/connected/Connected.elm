@@ -13,4 +13,14 @@ connected = Signal.mailbox False
 port connection : Task x ()
 port connection = socket `andThen` SocketIO.connected connected.address
 
-main = Signal.map (\b -> if b then show "CONNECTED" else show "disconnected") connected.signal
+everConnected : Signal Bool
+everConnected = Signal.foldp (||) False connected.signal
+
+
+main =
+    let f : (Bool, Bool) -> String
+        f tup = case tup of
+            (False, False) -> "Connecting..."
+            (False, True) -> "DISCONNECTED"
+            (True, _) -> "Connected."
+    in Signal.map2 (\a b -> f (a,b) |> show) connected.signal everConnected
