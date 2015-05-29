@@ -16,6 +16,9 @@ var eventName = "chat";
 io.on('connection', function (socket) {
     console.log("Client connected.");
     //sendData(socket);
+    socket.on("join", function (data) {
+        console.log("JOINED", data);
+    });
     socket.on(eventName, function (data) {
         console.log("Received", JSON.parse(data));
     });
