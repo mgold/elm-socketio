@@ -3,6 +3,9 @@ module SocketIO where
 {-| A module for working with [Socket.io](http://socket.io/) servers. This
     module uses Socket.io 1.3.5.
 
+    Compared to native JavaScript, this library is limited in its ability to
+    dynamically change hosts, and can only send and receive strings.
+
 # Creating a Socket
 Avoid creating signals of sockets.
 @docs io, Options, defaultOptions
@@ -45,24 +48,25 @@ simultanesouly on different ports.
 io : String -> Options -> Task.Task x Socket
 io = Native.SocketIO.io
 
-{-| Send anything on the socket using the given event name. No serialization is
-    done and the server must accept the JS representation of the Elm object
-    sent.
+{-| Send a string on the socket using the given event name. To serialize your
+    Elm values, use `toString` or `JSON.Encode`.
 -}
-emit : String -> a -> Socket -> Task.Task x ()
+emit : String -> String -> Socket -> Task.Task x ()
 emit = Native.SocketIO.emit
 
-{-| Receive events of the given name at a mailbox as a JSON-encoded value.
-    Unserializable JS objects become `"null"`; this is a good initial value
-    when you set up the mailbox.
--}
+{-| Receive data of the given event name at a mailbox as a string. If data
+    received is not already a string, it will be JSON-encoded. Unserializable JS
+    values become `"null"`; this is a good initial value when you set up the
+    mailbox. -}
 on : String -> Signal.Address String -> Socket -> Task.Task x ()
 on = Native.SocketIO.on
 
 {-| Set up a signal of bools indicating whether or not the socket is connected.
     You should initialize the mailbox to `False`; if the server is available a
     `True` event will be sent almost immediately. If the server is not
-    available, `io` will not complete and therefore this task will not run.
+    available, `io` will not complete and therefore this task will not run. If
+    the socket disconnects (and then reconnects later), the created signal will
+    have an event indicating that.
 -}
 connected : Signal.Address Bool -> Socket -> Task.Task x ()
 connected = Native.SocketIO.connected
