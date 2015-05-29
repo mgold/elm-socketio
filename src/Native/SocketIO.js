@@ -12,10 +12,9 @@ Elm.Native.SocketIO.make = function(localRuntime) {
     var Utils = Elm.Native.Utils.make (localRuntime);
 
     function ioWrapper(hostname, options){
-        // TODO this isn't allowed - it will connect to the server even if io
-        // isn't run through a port
-        var socket = io(hostname, options);
+        var socket;
         return Task.asyncFunction(function(callback){
+            socket = socket || io(hostname, options);
             if (socket.connected){
                 callback(Task.succeed(socket));
             }else{
