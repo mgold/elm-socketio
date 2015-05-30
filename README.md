@@ -10,8 +10,10 @@ Supports Elm 0.15 and Socket.io 1.3.5.
 
 ## Examples
 
+For each example,  working Elm client and Node server are provided. In separate terminals, run `node examples/<example>/server.js` and `elm reactor`, then [open your browser](http://localhost:8000/examples) as you normally would with the reactor.
+
 ### Numbers
 In the example, client and server exchange a number, incrementing it each time. The server sees odd numbers and the client sees even numbers.
 
-A working Elm client and Node server are provided. In separate terminals, run `node examples/numbers/server.js` and `elm reactor`, then [open your browser](http://localhost:8000/examples/numbers/Example.elm) as you normally would with the reactor.
-
+### Connected
+A very simple example to show that you can obtain a signal about the connection state and use this to render information in the UI.

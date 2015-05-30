@@ -12,8 +12,9 @@ Elm.Native.SocketIO.make = function(localRuntime) {
     var Utils = Elm.Native.Utils.make (localRuntime);
 
     function ioWrapper(hostname, options){
-        var socket = io(hostname, options);
+        var socket;
         return Task.asyncFunction(function(callback){
+            socket = socket || io(hostname, options);
             if (socket.connected){
                 callback(Task.succeed(socket));
             }else{
@@ -51,7 +52,8 @@ Elm.Native.SocketIO.make = function(localRuntime) {
         return Task.asyncFunction(function(callback){
             if (socket.disconnected) return callback(Task.fail("Socket disconnected"));
             socket.on(eventName, function(data){
-                Task.perform(address._0(JSON.stringify(data) || "null"));
+                if (typeof data !== "string") data = JSON.stringify(data) || "null";
+                Task.perform(address._0(data));
             });
             callback(Task.succeed(Utils.Tuple0));
         });
