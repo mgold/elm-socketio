@@ -109,7 +109,7 @@ renderOne : Time -> Message -> Element
 renderOne t {name, body, time} =
     let dt = t - time |> Time.inSeconds |> round
         timeMessage = if dt < 2 then "Just now" else toString dt ++ " seconds ago"
-       message = String.join " - " [name, body, timeMessage]
+        message = String.join " - " [name, body, timeMessage]
     in Text.fromString message |> E.leftAligned
 
 main : Signal Element
