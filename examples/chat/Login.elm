@@ -1,4 +1,4 @@
-module Login where
+module Login (main, submissions, submit)  where
 
 import Graphics.Element as E exposing (show, Element)
 import Graphics.Input as Input
@@ -14,6 +14,7 @@ import Json.Encode as Encode
 import Signal exposing ((<~), (~))
 
 import SocketIO exposing (Socket)
+import Protocol exposing (..)
 
 type alias State = {name : Field.Content, quest : Field.Content, color : Color}
 stateMB : Signal.Mailbox (State -> State)
@@ -85,21 +86,16 @@ render (w,h) name quest =
 main =
     render <~ Window.dimensions ~ nameField ~ questField
 
-submissions = Signal.sampleOn submitMB.signal state
+stateToMessage : State -> Time -> Message
+stateToMessage s =
+    Message "join" s.name.string s.quest.string s.color
 
-submit : Task x Socket -> Signal (Task x ())
-submit socket =
-    let encode s = Encode.encode 0 <| Encode.object
-            [ ("name", Encode.string (s.name.string))
-            , ("quest", Encode.string (s.quest.string))
-            , ("color", encodeColor (C.toRgb s.color)) ]
-        encodeColor {red, green, blue, alpha} = Encode.object
-            [ ("red", Encode.int red), ("green", Encode.int green),
-              ("blue", Encode.int blue), ("alpha", Encode.float alpha)]
-        send x = socket `andThen` SocketIO.emit "join" x
-    in Signal.map (encode>>send) submissions
+submissions : Signal Message
+submissions =
+    Signal.map2 stateToMessage state clock
+    |> Signal.sampleOn submitMB.signal
 
-socket = SocketIO.io "http://localhost:8001" SocketIO.defaultOptions
-
-port run : Signal (Task x ())
-port run = submit socket
+submit : Signal (Task x ())
+submit =
+    let send x = socket `andThen` SocketIO.emit eventName x
+    in Signal.map (encodeMessage>>send) submissions

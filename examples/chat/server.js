@@ -1,28 +1,32 @@
-var faker = require('faker');
 var io = require('socket.io')(8001);
 
-function sendData(socket){
-    if (socket.disconnected) return;
-    data = {name: faker.name.findName(),
-            body: faker.lorem.sentence(),
-            time: Date.now(),
-            submit: true};
-    console.log(data);
-    socket.emit("chat", data);
-    setTimeout(sendData, Math.random()*5000, socket);
-}
-
-var eventName = "chat"; 
+var eventName = "chat";
 io.on('connection', function (socket) {
-    console.log("Client connected.");
-    //sendData(socket);
-    socket.on("join", function (data) {
-        console.log("JOINED", data);
-    });
+    console.log("Client connected.")
+    var data;
     socket.on(eventName, function (data) {
-        console.log("Received", JSON.parse(data));
+        msg = JSON.parse(data);
+        if (msg.name === "") return;
+        if (!msg.time) msg.time = Date.now();
+        if (msg.method === "join"){
+            console.log(msg.name, "joined")
+            data = {name: msg.name, quest: msg.body, color: msg.color};
+            socket.broadcast.emit(eventName, msg)
+        }else if (msg.method === "post"){
+            if (msg.body === "") return;
+            //TODO: persist?
+            console.log(msg.name, "posted", msg.body)
+            socket.broadcast.emit(eventName, msg)
+        }
+        // TODO: Handle client-sent leave messages?
     });
     socket.on('disconnect', function () {
-        console.log("Client disconnected.");
+        if (!socket.chat){
+            console.log("Client disconnected without logging in.");
+        }else{
+            msg = {method: "leave", name: data.name, body: "",
+                   color: data.color, time: Date.now()};
+            socket.broadcast.emit(eventName, msg);
+        }
     });
 });
