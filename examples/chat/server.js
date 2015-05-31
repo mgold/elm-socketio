@@ -19,8 +19,8 @@ io.on('connection', function (socket) {
             })
         }else if (msg.method === "post"){
             if (msg.body === "") return;
-            messages.push(msg);
             console.log(msg.name + ":", msg.body)
+            messages.push(msg);
             socket.broadcast.emit(eventName, msg)
         }
         // TODO: Handle client-sent leave messages?
