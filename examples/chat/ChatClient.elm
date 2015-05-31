@@ -11,17 +11,22 @@ import Json.Decode as Decode exposing ((:=))
 import Json.Encode as Encode
 import Color exposing (Color)
 import Debug
+import Window
 
 import SocketIO
+
 import Protocol exposing (..)
 import Login
 import Post
+import View
 
+-- run tasks from other modules
 port outgoingJoins : Signal (Task x ())
 port outgoingJoins = Login.submit
 port outgoingPosts : Signal (Task x ())
 port outgoingPosts = Post.submit
 
+-- receive messages
 receivingMB : Signal.Mailbox String
 receivingMB = Signal.mailbox "null"
 
@@ -36,32 +41,18 @@ messages =
         Just x -> x::xs
         Nothing -> xs) []
 
-
-{---- View ----}
-renderMessages : List Message -> Element
-renderMessages ms =
-    E.flow E.up <| List.map renderOne ms
-
-renderOne : Message -> Element
-renderOne {name, body, time} =
-    let message = String.join " - " [name, body, toString time]
-    in Text.fromString message |> E.leftAligned
-
-renderedMessages : Signal Element
-renderedMessages =
-    Signal.map renderMessages messages
-
-type alias ViewComponents = {login : Element, post : Element, messages : Element}
+-- render view
+type alias ViewComponents = {login : Element, post : Element}
 viewComponents : Signal ViewComponents
-viewComponents = Signal.map3 ViewComponents Login.main Post.main renderedMessages
+viewComponents = Signal.map2 ViewComponents Login.main Post.main
 
-render : Message -> ViewComponents -> Element
-render {name, color} {login, post, messages} =
+render : (Int, Int) -> Message -> ViewComponents -> List Message -> Element
+render dims {name, color} {login, post} messages =
     if String.isEmpty name then login
-    else E.flow E.down [messages, post]
+    else View.render dims name color messages post
 
 main : Signal Element
 main =
-    Signal.map2 render Login.submissions viewComponents
+    Signal.map4 render Window.dimensions Login.submissions viewComponents messages
 
 

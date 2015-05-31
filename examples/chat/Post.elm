@@ -35,7 +35,7 @@ submitButton =
     Signal.map (\s -> Input.button
                       (Signal.message stateMB.address
                           <| State Field.noContent s.content.string)
-                      "Submit")
+                      "Send")
                stateMB.signal
 
 submitStates : Signal State
@@ -53,9 +53,9 @@ submissions =
 
 main : Signal Element
 main =
-    Signal.map2 E.beside field submitButton
-   -- let render a b c = a `E.beside` b `E.beside` c
-   -- in Signal.map3 render field submitButton (Signal.map E.show submissions)
+   let render a b = E.flow E.right [E.width 300 a, E.spacer 10 20, E.height 30 b]
+                       `E.above` E.spacer 1 20
+   in Signal.map2 render field submitButton
 
 submit : Signal (Task x ())
 submit =
