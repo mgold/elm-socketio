@@ -31,18 +31,6 @@ Elm.Native.SocketIO.make = function(localRuntime) {
                 callback(Task.succeed(socket));
             }
         });
-
-        /* What this *should* do is cause the task to fail if the socket ever
-         * gives up connecting. I haven't yet found a socket.io event that does
-         * this. Until then, I think it's okay for the task to never complete,
-         * since that's the default behavior with retries anyway.
-         */
-        socket.on("stubbedOut", function(d){
-            if (!sent){
-                sent = true;
-                callback(Task.fail("Socket disconnected"));
-            }
-        });
     }
 
     function emit(eventName, message, socket){

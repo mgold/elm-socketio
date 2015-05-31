@@ -4,7 +4,8 @@ module SocketIO where
     module uses Socket.io 1.3.5.
 
     Compared to native JavaScript, this library is limited in its ability to
-    dynamically change hosts, and can only send and receive strings.
+    dynamically change hosts, handle errors, and can data must be encoded as
+    a string.
 
 # Creating a Socket
 Avoid creating signals of sockets.
@@ -43,7 +44,9 @@ defaultOptions =
     socket = SocketIO.io "http://localhost:8001" SocketIO.defaultOptions
 
 It's possible to run the Elm Reactor and your Socket.io node server
-simultanesouly on different ports.
+simultaneously on different ports.
+
+The task never fails; if the server is unreachable it will never succeed.
 -}
 io : String -> Options -> Task.Task x Socket
 io = Native.SocketIO.io
