@@ -17,3 +17,8 @@ In the example, client and server exchange a number, incrementing it each time. 
 
 ### Connected
 A very simple example to show that you can obtain a signal about the connection state and use this to render information in the UI.
+
+### Chat
+The main example: a realtime chat program. You can test it out yourself with multiple browser tabs.
+
+Chat is divided into five modules. `Protocol` most of the knowledge shared with the server and a few other common functions. `Login` is the login page, `Post` is the text field and submit button, and `View` makes the messages look pretty. Finally, `ChatClient` pulls it all together and does the I/O.
