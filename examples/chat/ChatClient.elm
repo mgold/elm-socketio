@@ -1,16 +1,11 @@
 module ChatClient where
 
-import Graphics.Element as E exposing (show, Element)
+import Graphics.Element as E exposing (Element)
 import Graphics.Input as Input
 import Graphics.Input.Field as Field
 import Task exposing (Task, andThen)
 import String
-import Time exposing (Time)
-import Text
-import Json.Decode as Decode exposing ((:=))
-import Json.Encode as Encode
 import Color exposing (Color)
-import Debug
 import Window
 
 import SocketIO

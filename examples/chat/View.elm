@@ -1,7 +1,6 @@
 module View where
 
-import Graphics.Element as E exposing (show, Element)
-import String
+import Graphics.Element as E exposing (Element)
 import Time exposing (Time)
 import Text exposing (Text)
 import Date
