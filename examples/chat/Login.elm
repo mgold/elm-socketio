@@ -35,7 +35,7 @@ colors =
         , ("Yellow", C.yellow)
         , ("Orange", C.orange)
         , ("Purple", C.purple)
-        , ("Gray", C.gray)
+        , ("Gray", C.charcoal)
         ] |> E.width 150
 
 nameField =

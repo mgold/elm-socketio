@@ -37,6 +37,7 @@ messages : Signal (List Message)
 messages =
     Signal.map (decodeMessage>>Result.toMaybe) receivingMB.signal
     |> Signal.merge (Signal.map Just Post.submissions)
+    |> Signal.dropRepeats
     |> Signal.foldp (\mx xs -> case mx of
         Just x -> x::xs
         Nothing -> xs) []
