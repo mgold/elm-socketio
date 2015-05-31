@@ -1,4 +1,4 @@
-module Post where
+module Post (main, submissions, submit) where
 
 {-| A module to handle the text field to post messages. -}
 
@@ -30,8 +30,8 @@ field =
                    (\fc -> Signal.message stateMB.address (State fc "")) ""
     in Signal.map (.content>>base) stateMB.signal
 
-submit : Signal Element
-submit =
+submitButton : Signal Element
+submitButton =
     Signal.map (\s -> Input.button
                       (Signal.message stateMB.address
                           <| State Field.noContent s.content.string)
@@ -53,7 +53,11 @@ submissions =
 
 main : Signal Element
 main =
-    Signal.map2 E.beside field submit
+    Signal.map2 E.beside field submitButton
    -- let render a b c = a `E.beside` b `E.beside` c
-   -- in Signal.map3 render field submit (Signal.map E.show submissions)
+   -- in Signal.map3 render field submitButton (Signal.map E.show submissions)
 
+submit : Signal (Task x ())
+submit =
+     let send x = socket `andThen` SocketIO.emit eventName x
+     in Signal.map (encodeMessage>>send) submissions

@@ -1,4 +1,4 @@
-module Example where
+module ChatClient where
 
 import Graphics.Element as E exposing (show, Element)
 import Graphics.Input as Input
@@ -15,77 +15,53 @@ import Debug
 import SocketIO
 import Protocol exposing (..)
 import Login
+import Post
 
-port loginTask : Signal (Task x ())
-port loginTask = Login.submit
+port outgoingJoins : Signal (Task x ())
+port outgoingJoins = Login.submit
+port outgoingPosts : Signal (Task x ())
+port outgoingPosts = Post.submit
 
-receiving : Signal.Mailbox String
-receiving = Signal.mailbox "null"
+receivingMB : Signal.Mailbox String
+receivingMB = Signal.mailbox "null"
 
--- Send server data to the mailbox
 port responses : Task x ()
-port responses = socket `andThen` SocketIO.on eventName receiving.address
-
-{---- Sent to Server ----}
-type alias FieldModel = {content : Field.Content, submit : Bool}
-model0 = FieldModel Field.noContent False
-
-entries : Signal.Mailbox FieldModel
-entries = Signal.mailbox model0
-
-field : Signal Element
-field =
-    let base = Field.field Field.defaultStyle (\c -> Signal.message entries.address (FieldModel c False)) ""
-    in Signal.map (.content>>base) entries.signal
-
-submit : Signal Element
-submit =
-    Signal.map (\{content} -> Input.button (Signal.message entries.address <| FieldModel content True) "Submit")
-        entries.signal
-
-port clearFieldAfterSubmit : Signal (Task x ())
-port clearFieldAfterSubmit =
-    Signal.filter .submit model0 entries.signal
-        |> Signal.map (always <| Signal.send entries.address model0)
-
-fieldModelToMessage : Time -> FieldModel -> Message
-fieldModelToMessage t {content, submit} =
-    let msg = if submit || String.isEmpty content.string then content.string else "x" -- don't send unsent typing
-    in Message "Chat Client" msg t Color.blue submit
-
-localMessage : Signal Message
-localMessage =
-    Signal.map2 fieldModelToMessage (clock |> Signal.sampleOn entries.signal) entries.signal
-
-port outgoing : Signal (Task x ())
-port outgoing =
-    let send x = socket `andThen` SocketIO.emit eventName x
-    in Signal.map (encodeMessage>>send) localMessage
-
+port responses = socket `andThen` SocketIO.on eventName receivingMB.address
 
 messages : Signal (List Message)
 messages =
-    Signal.map (decodeMessage>>Result.toMaybe) receiving.signal
-    |> Signal.merge (Signal.map (\m -> if m.submit then Just m else Nothing) localMessage)
+    Signal.map (decodeMessage>>Result.toMaybe) receivingMB.signal
+    |> Signal.merge (Signal.map Just Post.submissions)
     |> Signal.foldp (\mx xs -> case mx of
         Just x -> x::xs
         Nothing -> xs) []
 
-{---- View ----}
-render : Element -> Time -> List Message -> Element
-render elem t ms =
-    elem :: List.map (renderOne t) ms
-        |> E.flow E.up
 
-renderOne : Time -> Message -> Element
-renderOne t {name, body, time} =
-    let dt = t - time |> Time.inSeconds |> round
-        timeMessage = if dt < 2 then "Just now" else toString dt ++ " seconds ago"
-        message = String.join " - " [name, body, timeMessage]
+{---- View ----}
+renderMessages : List Message -> Element
+renderMessages ms =
+    E.flow E.up <| List.map renderOne ms
+
+renderOne : Message -> Element
+renderOne {name, body, time} =
+    let message = String.join " - " [name, body, toString time]
     in Text.fromString message |> E.leftAligned
+
+renderedMessages : Signal Element
+renderedMessages =
+    Signal.map renderMessages messages
+
+type alias ViewComponents = {login : Element, post : Element, messages : Element}
+viewComponents : Signal ViewComponents
+viewComponents = Signal.map3 ViewComponents Login.main Post.main renderedMessages
+
+render : Message -> ViewComponents -> Element
+render {name, color} {login, post, messages} =
+    if String.isEmpty name then login
+    else E.flow E.down [messages, post]
 
 main : Signal Element
 main =
-    let textField = Signal.map2 E.beside field submit
-    in Signal.map3 render textField (Time.every Time.second) messages |> Signal.sampleOn messages
+    Signal.map2 render Login.submissions viewComponents
+
 

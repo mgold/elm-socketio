@@ -2,15 +2,15 @@ var io = require('socket.io')(8001);
 
 var eventName = "chat";
 io.on('connection', function (socket) {
-    console.log("Client connected.")
-    var data;
+    console.log("Client connected")
+    var metadata;
     socket.on(eventName, function (data) {
         msg = JSON.parse(data);
         if (msg.name === "") return;
         if (!msg.time) msg.time = Date.now();
         if (msg.method === "join"){
             console.log(msg.name, "joined")
-            data = {name: msg.name, quest: msg.body, color: msg.color};
+            metadata = {name: msg.name, quest: msg.body, color: msg.color};
             socket.broadcast.emit(eventName, msg)
         }else if (msg.method === "post"){
             if (msg.body === "") return;
@@ -21,12 +21,13 @@ io.on('connection', function (socket) {
         // TODO: Handle client-sent leave messages?
     });
     socket.on('disconnect', function () {
-        if (!socket.chat){
-            console.log("Client disconnected without logging in.");
+        if (!metadata){
+            console.log("Client disconnected without logging in");
         }else{
-            msg = {method: "leave", name: data.name, body: "",
-                   color: data.color, time: Date.now()};
+            msg = {method: "leave", name: metadata.name, body: "",
+                   color: metadata.color, time: Date.now()};
             socket.broadcast.emit(eventName, msg);
+            console.log(metadata.name, "disconnected");
         }
     });
 });
