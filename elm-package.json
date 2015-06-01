@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "summary": "Socket.io (websockets) library",
+    "summary": "Socket.io (websockets) for bidirectional realtime messaging",
     "repository": "https://github.com/mgold/elm-socketio.git",
     "license": "BSD3",
     "source-directories": [
