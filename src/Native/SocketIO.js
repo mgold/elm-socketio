@@ -36,7 +36,11 @@ Elm.Native.SocketIO.make = function(localRuntime) {
     function emit(eventName, message, socket){
         return Task.asyncFunction(function(callback){
             if (socket.disconnected) return callback(Task.fail("Socket disconnected"));
-            socket.emit(eventName, message);
+            if (eventName === ""){
+                socket.send(message);
+            }else{
+                socket.emit(eventName, message);
+            }
             callback(Task.succeed(Utils.Tuple0));
         });
     }
@@ -44,6 +48,7 @@ Elm.Native.SocketIO.make = function(localRuntime) {
     function on(eventName, address, socket){
         return Task.asyncFunction(function(callback){
             if (socket.disconnected) return callback(Task.fail("Socket disconnected"));
+            if (eventName === "") eventName = 'message';
             socket.on(eventName, function(data){
                 if (typeof data !== "string") data = JSON.stringify(data) || "null";
                 Task.perform(address._0(data));

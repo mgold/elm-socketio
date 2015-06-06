@@ -1,19 +1,20 @@
 module SocketIO where
 
 {-| A module for working with [Socket.io](http://socket.io/) servers. This
-    module uses Socket.io 1.3.5.
+    module uses Socket.io 1.3.5. You can also communicate with a plain websocket
+    server by passing the empty string as the first argument to `on` and `emit`.
 
-    Compared to native JavaScript, this library is limited in its ability to
-    dynamically change hosts, handle errors, and can data must be encoded as
-    a string.
+    Compared to native JavaScript socket.io, this library is limited in its
+    ability to dynamically change hosts, handle errors, and data must be encoded
+    as a string.
 
 # Creating a Socket
 Avoid creating signals of sockets.
 @docs io, Options, defaultOptions
 
 # Sending and Receiving
-These functions should be used with `Task.andThen` to provide a socket obtained
-with `io`.
+These functions should be used with `Task.andThen` to provide them with a socket
+obtained with `io`.
 @docs emit, on, connected
 -}
 
