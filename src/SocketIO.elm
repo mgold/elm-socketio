@@ -1,4 +1,4 @@
-module SocketIO where
+module SocketIO (io, Options, defaultOptions, emit, on, connected, Socket) where
 
 {-| A module for working with [Socket.io](http://socket.io/) servers. This
 module uses Socket.io 1.3.5. You can also communicate with a plain websocket
