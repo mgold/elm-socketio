@@ -27,6 +27,8 @@ import Native.SocketIO
 
 {-| An opaque type representing a socket. You cannot access anything directly,
 only through the API provided above.
+
+**Deprecation notice:** The `Socket` tag was never meant to be exposed and should not be used.
 -}
 type Socket = Socket
 
@@ -61,6 +63,8 @@ io = Native.SocketIO.io
 
 {-| Send a string on the socket using the given event name. To serialize your
 Elm values, use `toString` or `JSON.Encode`.
+
+    port outgoing = socket `Task.andThen` emit "myEvent" "Testing 1 2 3"
 -}
 emit : String -> String -> Socket -> Task.Task x ()
 emit = Native.SocketIO.emit
@@ -69,6 +73,9 @@ emit = Native.SocketIO.emit
 received is not already a string, it will be JSON-encoded. Unserializable JS
 values become `"null"`; this is a good initial value when you set up the
 mailbox.
+
+    mailbox = Signal.mailbox "null"
+    port incoming = socket `Task.andThen` on "myEvent" mailbox.address
 -}
 on : String -> Signal.Address String -> Socket -> Task.Task x ()
 on = Native.SocketIO.on
@@ -77,7 +84,7 @@ on = Native.SocketIO.on
 You should initialize the mailbox to `False`; if the server is available a
 `True` event will be sent almost immediately. If the server is not available,
 `io` will not complete and therefore this task will not run. If the socket
-disconnects (and then reconnects later), the created signal will have an event
+disconnects (and then reconnects later), the created signal will have events
 indicating that.
 -}
 connected : Signal.Address Bool -> Socket -> Task.Task x ()
