@@ -1,4 +1,4 @@
-module SocketIO where
+module SocketIO (io, Options, defaultOptions, emit, on, connected, Socket) where
 
 {-| A module for working with [Socket.io](http://socket.io/) servers. This
 module uses Socket.io 1.3.5. You can also communicate with a plain websocket
@@ -27,8 +27,6 @@ import Native.SocketIO
 
 {-| An opaque type representing a socket. You cannot access anything directly,
 only through the API provided above.
-
-**Deprecation notice:** The `Socket` tag was never meant to be exposed and should not be used.
 -}
 type Socket = Socket
 
