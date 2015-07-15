@@ -12,30 +12,31 @@ import Time exposing (Time)
 import SocketIO
 import Protocol exposing (..)
 import Login
+import Dispatch as Signal
 
-type alias State = {content : Field.Content, submit : String}
-state0 = State Field.noContent ""
+type alias State = {submit : String, content : Field.Content}
+state0 = State "" Field.noContent
 
-stateMB : Signal.Mailbox State
-stateMB = Signal.mailbox state0
+states : Signal.Dispatcher State
+states = Signal.dispatcher state0
 
 field : Signal Element
 field =
     let base = Field.field Field.defaultStyle
-                   (\fc -> Signal.message stateMB.address (State fc "")) ""
-    in Signal.map (.content>>base) stateMB.signal
+                   ((State "")>>states.dispatch) ""
+    in Signal.map (.content>>base) states.signal
 
 submitButton : Signal Element
 submitButton =
     Signal.map (\s -> Input.button
-                      (Signal.message stateMB.address
-                          <| State Field.noContent s.content.string)
+                      (states.dispatch
+                          <| State s.content.string Field.noContent)
                       "Send")
-               stateMB.signal
+               states.signal
 
 submitStates : Signal State
 submitStates =
-    Signal.filter (\s -> not <| String.isEmpty s.submit) state0 stateMB.signal
+    Signal.filter (\s -> not <| String.isEmpty s.submit) state0 states.signal
 
 stateToMessage : State -> Message -> Time -> Message
 stateToMessage {submit} {name, color} =

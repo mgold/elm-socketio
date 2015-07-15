@@ -12,20 +12,20 @@ import Signal exposing ((<~), (~))
 
 import SocketIO exposing (Socket)
 import Protocol exposing (..)
+import Dispatch as Signal
 
 type alias State = {name : Field.Content, quest : Field.Content, color : Color}
-stateMB : Signal.Mailbox (State -> State)
-stateMB = Signal.mailbox identity
-sendState = Signal.message stateMB.address
+states : Signal.Dispatcher (State -> State)
+states = Signal.dispatcher identity
 
 state : Signal State
 state =
     let state0 = State Field.noContent Field.noContent C.blue
-    in Signal.foldp (<|) state0 stateMB.signal
+    in Signal.foldp (<|) state0 states.signal
 
 colors : Element
 colors =
-    Input.dropDown (\c -> sendState (\s -> {s| color <- c}))
+    Input.dropDown (\c -> states.dispatch (\s -> {s| color <- c}))
         [ ("Blue", C.blue)
         , ("Red", C.red)
         , ("Green", C.green)
@@ -37,12 +37,12 @@ colors =
 
 nameField =
     Field.field Field.defaultStyle
-    (\fc -> sendState (\s -> {s|name <- fc}))
+    (\fc -> states.dispatch (\s -> {s|name <- fc}))
     "" <~ (Signal.map .name state)
 
 questField =
     Field.field Field.defaultStyle
-    (\fc -> sendState (\s -> {s|quest <- fc}))
+    (\fc -> states.dispatch (\s -> {s|quest <- fc}))
     "" <~ (Signal.map .quest state)
 
 submitMB = Signal.mailbox ()
