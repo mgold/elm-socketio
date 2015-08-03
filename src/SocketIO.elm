@@ -60,7 +60,7 @@ io : String -> Options -> Task.Task x Socket
 io = Native.SocketIO.io
 
 {-| Send a string on the socket using the given event name. To serialize your
-Elm values, use `toString` or `JSON.Encode`.
+Elm values, use `toString` or `Json.Encode`.
 
     port outgoing = socket `Task.andThen` emit "myEvent" "Testing 1 2 3"
 -}
