@@ -82,8 +82,8 @@ on = Native.SocketIO.on
 You should initialize the mailbox to `False`; if the server is available a
 `True` event will be sent almost immediately. If the server is not available,
 `io` will not complete and therefore this task will not run. If the socket
-disconnects (and then reconnects later), the created signal will have events
-indicating that.
+disconnects (and then reconnects later), the address's mailbox's signal will
+have events indicating that.
 -}
 connected : Signal.Address Bool -> Socket -> Task.Task x ()
 connected = Native.SocketIO.connected
