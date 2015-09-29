@@ -13,7 +13,7 @@ eventName = "example"
 
 -- send a value once at program start
 port initial : Task x ()
-port initial = socket `andThen` SocketIO.emit eventName 0
+port initial = socket `andThen` SocketIO.emit eventName "0"
 
 received : Signal.Mailbox String
 received = Signal.mailbox "null"
@@ -29,7 +29,7 @@ validResponses =
 -- send many values (with a 1-second throttle)
 port recurring : Signal (Task x ())
 port recurring =
-    Signal.map (\i -> socket `andThen` SocketIO.emit eventName (i+1))
+    Signal.map (\i -> socket `andThen` SocketIO.emit eventName (toString (i+1)))
     <| Signal.sampleOn (Time.fps 1) validResponses
 
 main = Signal.map show validResponses
