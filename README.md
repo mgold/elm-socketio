@@ -13,7 +13,8 @@ For each example, a  working Elm client and Node server are provided. In separat
 ### Numbers
 In the example, client and server exchange a number, incrementing it each time. The server sees odd numbers and the client sees even numbers.
 
-This example is big enough to show all the useful features of the library, but no bigger.
+This example is big enough to show all the useful features of the library, but no bigger. There is also [a version](https://gist.github.com/mgold/c7832f9197ff3e931152) using The Elm Architecture and elm-effects.
+
 
 ### Chat
 The main example: a realtime chat program. You can test it out yourself with multiple browser tabs.
