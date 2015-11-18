@@ -1,10 +1,10 @@
 #Socket.io for Elm
 
-This library provides Elm code with realtime two-way communication with a server using [socket.io](socket.io). It works quite well for the most common use case, a stable connection to a server.
+This library provides Elm code with realtime two-way communication with a server using [socket.io](http://socket.io/). It works quite well for the most common use case, a stable connection to a server.
 
 That said, error handling is limited to setting options up front and reading the connection status. Joining [rooms](http://socket.io/docs/rooms-and-namespaces/), an inherently impure action, is not supported. If you need to dynamically connect and disconnect, use JavaScript.
 
-For documentation, see `src/SocketIO.elm`. Supports Elm 0.15 and Socket.io 1.3.5. Also supports vanilla websockets (use the empty string as the event name).
+For documentation, see `src/SocketIO.elm`. Supports Elm 0.16 and Socket.io 1.3.7. Also supports vanilla websockets (use the empty string as the event name).
 
 ## Examples
 
