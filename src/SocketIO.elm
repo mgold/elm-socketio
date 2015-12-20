@@ -47,7 +47,7 @@ Socket.io itself.
 -}
 defaultOptions : Options
 defaultOptions =
-    Options False True 1000 500 20000
+    Options False True 1000 5000 20000
 
 {-| Create a socket, given a hostname and options.
 
