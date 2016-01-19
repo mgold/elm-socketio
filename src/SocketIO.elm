@@ -1,8 +1,7 @@
 module SocketIO (io, Options, defaultOptions, emit, on, connected, Socket) where
 
 {-| A module for working with [Socket.io](http://socket.io/) servers. This
-module uses Socket.io 1.3.7 You can also communicate with a plain websocket
-server by passing the empty string as the first argument to `on` and `emit`.
+module uses Socket.io 1.3.7.
 
 Compared to native JavaScript socket.io, this library is limited in its ability
 to dynamically change hosts, handle errors, and data must be encoded as a
