@@ -4,8 +4,7 @@
     "repository": "https://github.com/mgold/elm-socketio.git",
     "license": "BSD3",
     "source-directories": [
-        "src",
-        "examples/chat"
+        "src"
     ],
     "exposed-modules": [
         "SocketIO"
