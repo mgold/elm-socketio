@@ -18,6 +18,7 @@ renderOne mtw message =
             "join" -> renderJoin message
             "post" -> renderPost message mtw
             "leave" -> renderLeave message
+            _ -> E.empty
     in E.flow E.down [elem, E.spacer 1 20]
 
 renderJoin {name, body, time, color} =
@@ -53,13 +54,13 @@ renderTime time =
 
 bgColor : Color -> Color
 bgColor c =
-    if | c == Color.blue -> Color.lightBlue
-       | c == Color.red -> Color.lightRed
-       | c == Color.green -> Color.lightGreen
-       | c == Color.yellow -> Color.lightYellow
-       | c == Color.purple -> Color.lightPurple
-       | c == Color.orange -> Color.lightOrange
-       | otherwise -> Color.darkGray
+    if c == Color.blue then Color.lightBlue else
+    if c == Color.red then Color.lightRed else
+    if c == Color.green then Color.lightGreen else
+    if c == Color.yellow then Color.lightYellow else
+    if c == Color.purple then Color.lightPurple else
+    if c == Color.orange then Color.lightOrange else
+       Color.darkGray
 
 render : (Int, Int) -> String -> Color -> List Message -> Element -> Element
 render (w,h) name color messages post =

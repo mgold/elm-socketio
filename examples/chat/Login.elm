@@ -8,7 +8,7 @@ import Color as C exposing (Color)
 import Time exposing (Time)
 import Text
 import Window
-import Signal exposing ((<~), (~))
+import Signal
 
 import SocketIO exposing (Socket)
 import Protocol exposing (..)
@@ -25,7 +25,7 @@ state =
 
 colors : Element
 colors =
-    Input.dropDown (\c -> sendState (\s -> {s| color <- c}))
+    Input.dropDown (\c -> sendState (\s -> {s| color = c}))
         [ ("Blue", C.blue)
         , ("Red", C.red)
         , ("Green", C.green)
@@ -36,14 +36,24 @@ colors =
         ] |> E.width 150
 
 nameField =
-    Field.field Field.defaultStyle
-    (\fc -> sendState (\s -> {s|name <- fc}))
-    "" <~ (Signal.map .name state)
+    let
+      fieldFunc =
+        Field.field Field.defaultStyle
+        (\fc -> sendState (\s -> {s|name = fc}))
+        ""
+      name = Signal.map .name state
+    in
+      Signal.map fieldFunc name
 
 questField =
-    Field.field Field.defaultStyle
-    (\fc -> sendState (\s -> {s|quest <- fc}))
-    "" <~ (Signal.map .quest state)
+    let
+      fieldFunc =
+        Field.field Field.defaultStyle
+        (\fc -> sendState (\s -> {s|quest = fc}))
+        ""
+      quest = Signal.map .quest state
+    in
+      Signal.map fieldFunc quest
 
 submitMB = Signal.mailbox ()
 submitButton =
@@ -81,7 +91,7 @@ render (w,h) name quest =
     |> E.color C.lightBlue
 
 main =
-    render <~ Window.dimensions ~ nameField ~ questField
+    Signal.map3 render Window.dimensions nameField questField
 
 stateToMessage : State -> Time -> Message
 stateToMessage s =
