@@ -1,5 +1,5 @@
 {
-    "version": "2.0.2",
+    "version": "2.0.3",
     "summary": "Socket.io (websockets) for bidirectional realtime messaging",
     "repository": "https://github.com/mgold/elm-socketio.git",
     "license": "BSD3",
