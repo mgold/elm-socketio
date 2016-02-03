@@ -6,7 +6,7 @@ That said, error handling is limited to setting options up front and reading the
 
 Note that vanilla websockets (i.e. servers other than Socket.io) are not supported. You should use ports and the JS Websocket API.
 
-For documentation, see `src/SocketIO.elm`. Supports Elm 0.16 and Socket.io 1.4.4.
+For documentation, see `src/SocketIO.elm`. Supports Elm 0.16 and Socket.io 1.4.4. If this version is causing problems, open an issue to bump to the latest version.
 
 ## Examples
 For each example, a working Elm client and Node server are provided. You will need to `cd examples` to start. This first time you do this, you will also need to `npm install` to get socket.io for the server. Then in separate terminals, run `node <example-name>/server.js` and `elm reactor`, then [open your browser](http://localhost:8000) and navigate to the example as you normally would with the reactor.
