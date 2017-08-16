@@ -1,4 +1,6 @@
-#Socket.io for Elm
+# Socket.io for Elm
+
+**This library has not and will not be updated for recent versions of Elm.**
 
 This library provides Elm code with realtime push-based two-way communication with a server using [socket.io](http://socket.io/). It works quite well for the most common use case, a stable connection to a server that you wrote in Node.js.
 
